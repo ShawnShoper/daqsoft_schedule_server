@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<title></title>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/tableExport.js"></script>
+<script src="js/jquery.base64.js"></script>
+<script src="js/bootstrap-table.js"></script>
+<script src="js/bootstrap-table-export.js"></script>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap-table.min.css">
+<link href="../bootstrap/plugins/bootstrap-toggle/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="../bootstrap/plugins/bootstrap-toggle/bootstrap-toggle.min.js"></script>
+<script type="text/javascript" src="../bootstrap/plugins/validator/bootstrapValidator.min.js"></script>
+<link rel="stylesheet" href="../bootstrap/plugins/validator/bootstrapValidator.min.css"/>
+</head>
+<body>
+	<!-- 添加修改 modal begin-->
+	<div class="modal fade" id="addTask" tabindex="-1" role="dialog" 
+		   aria-labelledby="myModalLabel" aria-hidden="true">
+		   <div class="modal-dialog">
+		      <div class="modal-content">
+		         <div class="modal-header">
+		            <button type="button" class="close" 
+		               data-dismiss="modal" aria-hidden="true">
+		                  &times;
+		            </button>
+		            <h4 class="modal-title" id="myModalLabel">
+		               新增任务模版
+		            </h4>
+		         </div>
+		         <div class="modal-body">
+		            <form role="form" id="addTaskForm">
+					   <div class="form-group">
+					      <label for="name">名称</label>
+					      <input type="text" class="form-control" name="name"
+					         placeholder="请输入名称">
+					   </div>
+					   <div class="form-group">
+				          <label for="url">链接地址</label>
+					      <input type="text" class="form-control" name="url" 
+					         placeholder="请输入链接地址">
+			          </div>
+			          <div class="form-group">
+				          <label for="template">任务模版 ID</label>
+				          <input class="form-control" name="templateID" placeholder="请输入任务模版ID"/>
+					   </div>
+				     <div class="form-group">
+				          <label for="cookies">cookies</label>
+					      <input type="text" class="form-control" name="cookies" 
+					         placeholder="请输入域cookies">
+			         </div>
+			         <div class="form-group">
+				          <label for="cookies">任务参数</label>
+					      <input type="text" class="form-control" name="params" 
+					         placeholder="任务参数">
+			         </div>
+			          <div class="form-group">
+				          <label for="cookies">cron表达式</label>
+					      <input type="text" class="form-control" name="cronexp" 
+					         placeholder="cron表达式,不填则非定时任务。">
+			         </div>
+					</form>
+		         </div>
+		         <div class="modal-footer">
+		            <button type="button" class="btn btn-default" 
+		               data-dismiss="modal">关闭
+		            </button>
+		            <button type="button" id="addsubmit" class="btn btn-primary">
+		               提交
+		            </button>
+		         </div>
+		         <script type="text/javascript">
+
+		         	$(document).ready(function() {
+		    			$('#addTaskForm').bootstrapValidator({
+//		    		        live: 'disabled',
+		    		        message: 'This value is not valid',
+		    		        feedbackIcons: {
+		    		            valid: 'glyphicon glyphicon-ok',
+		    		            invalid: 'glyphicon glyphicon-remove',
+		    		            validating: 'glyphicon glyphicon-refresh'
+		    		        },
+		    		        fields: {
+		    		        	name: {
+		    		                validators: {
+		    		                	notEmpty: {
+		    		                        message: '名称不能为空'
+		    		                    }
+		    		                }
+		    		            },
+		    		            url: {
+		    		                validators: {
+		    		                	notEmpty: {
+		    		                        message: '链接不能为空'
+		    		                    }
+		    		                }
+		    		            },
+		    		            templateID: {
+		    		                validators: {
+		    		                	notEmpty: {
+		    		                        message: 'CRON不能为空'
+		    		                    }
+		    		                }
+		    		            }
+		    		        }
+		    			
+		    			})
+		    		});
+         			 
+		         </script>
+		      </div><!-- /.modal-content -->
+		</div><!-- /.modal -->
+		</div>
+	<!-- 添加修改 modal end-->
+
+	<div id="toolbar" class="btn-group">
+		<button type="button" class="btn btn-default" data-toggle="modal" 
+   			data-target="#addTask">
+			<i class="glyphicon glyphicon-plus"></i>
+		</button>
+		<button type="button" class="btn btn-default">
+			<i class="glyphicon glyphicon-edit"></i>
+		</button>
+		<button type="button" id="task_delete" class="btn btn-default">
+			<i class="glyphicon glyphicon-trash"></i>
+		</button>
+	</div>
+	<table id="table" data-toggle="table" data-url="/task/getTask"
+		data-pagination="true" 
+		data-side-pagination="server" data-search="true"
+		data-show-refresh="true" data-show-columns="true" 
+		data-sort-name="lastFinishTime"
+		data-sort-order="desc" data-toolbar="#toolbar">
+		<thead>
+			<tr>
+				<th data-field="id" data-align="center">ID</th>
+				<th data-field="name" data-align="center">
+					名称</th>
+				<th data-field="lastFinishTime" data-align="center"
+					data-sortable="true">最近执行时间</th>
+				<th data-field="timing" data-align="center">定时任务</th>
+				<th data-field="cronExpress" 
+					data-align="center">CRON 表达式</th>
+				<th data-field="loops" data-align="center" data-sortable="true">执行圈数</th>
+				<th data-field="enabled" data-align="center">是否启用</th>
+			</tr>
+		</thead>
+	</table>
+	<div class="alert alert-success" id="eventsResult">
+	    Here is the result of event.
+	</div>
+	<script type="text/javascript">
+		 $(function(){
+		 	$('#task_delete').click(function(){
+     	 		var row = getSelectedRow()
+     	 		var isTrue = confirm("确定删除【"+row.name+"】吗?", "");
+     	 		if(isTrue){
+	     	 		if(row != undefined){
+	     	 			$.ajax({
+						   type: "DELETE",
+						   url: "/task/deleteTask/"+row.id,
+						   success: function(msg){
+						   	if(msg.code === 0){
+	         		 			alert("删除任务:【"+row.name+"】成功...")
+	         		 			$("button[name='refresh']").click()
+						   }},
+						   error:function(msg){
+						   		alert("删除数据失败,错误信息:"+msg.responseJSON.message)
+						   }
+						});
+	     	 		}else{
+	     	 			alert("请选中一条记录...")
+	     	 		}
+     	 		}
+     	 	})
+     	 	$('#addsubmit').click(function() {
+				$('#addTaskForm').bootstrapValidator('validate');
+				if($('#addTaskForm').data('bootstrapValidator').isValid()){
+					//验证成功...
+					$.ajax({
+					   type: "POST",
+					   url: "/task/addTask",
+					   data: $('#addTaskForm').serialize(),
+					   success: function(msg){
+					   	if(msg.code === 0){
+	         		 		$("#addTask").modal("hide")
+	         		 		$('#addTaskForm')[0].reset()
+	         		 		$('#addTaskForm').data('bootstrapValidator').resetForm()
+	         		 		$("button[name='refresh']").click();
+					   	}
+					   },
+					   error:function(msg){
+					   		alert("请求失败,错误信息:"+msg.responseJSON.message)
+					   }
+					});
+				}else{
+					//验证失败...do nothing
+				}
+			})
+				var $table = $('#table');
+			  	$table.on('click-row.bs.table', function (e, row, $element) {
+			    		$('.success').removeClass('success');
+			    		$($element).addClass('success');
+			  	});
+			    $('#button').click(function () {
+			    		alert('Selected name: ' + getSelectedRow().name);
+			    });
+
+				function getSelectedRow() {
+				    var index = $table.find('tr.success').data('index');
+				    return $table.bootstrapTable('getData')[index];
+				}
+	
+				var $result = $('#eventsResult');
+				$('#table').on('all.bs.table', function (e, name, args) {
+			        console.log('Event:', name, ', data:', args);
+			    })
+			    .on('click-row.bs.table', function (e, row, $element) {
+			        $result.text('Event: click-row.bs.table');
+			    })
+			    .on('dbl-click-row.bs.table', function (e, row, $element) {
+			    	alert('Selected name: ' + getSelectedRow().name)
+			        $result.text('Event: dbl-click-row.bs.table');
+			    })
+			    .on('sort.bs.table', function (e, name, order) {
+			        $result.text('Event: sort.bs.table');
+			    })
+			    .on('check.bs.table', function (e, row) {
+			        $result.text('Event: check.bs.table');
+			    })
+			    .on('uncheck.bs.table', function (e, row) {
+			        $result.text('Event: uncheck.bs.table');
+			    })
+			    .on('check-all.bs.table', function (e) {
+			        $result.text('Event: check-all.bs.table');
+			    })
+			    .on('uncheck-all.bs.table', function (e) {
+			        $result.text('Event: uncheck-all.bs.table');
+			    })
+			    .on('load-success.bs.table', function (e, data) {
+			     //后台生成的 checkbox。是懒加载的，因此需要通过 table load success 事件来重新加载一次后面生成的toggle..
+			    	var toggles = $(".disable_checkbox");
+			     	for(var i=0;i<toggles.length;i++){
+				    	 $(toggles[i]).bootstrapToggle()
+				    	 $(toggles[i]).change(function(){
+				    	 	disabledChanged($(this))
+			    		 })
+			    	 /*  toggles[i].bootstrapToggle().change(checkToggle());*/ 
+			    	 }
+			     $result.text('Event: load-success.bs.table');
+			    })
+			    .on('load-error.bs.table', function (e, status) {
+			        $result.text('Event: load-error.bs.table');
+			    })
+			    .on('column-switch.bs.table', function (e, field, checked) {
+			        $result.text('Event: column-switch.bs.table');
+			    })
+			    .on('page-change.bs.table', function (e, number, size) {
+			        $result.text('Event: page-change.bs.table');
+			    })
+			    .on('search.bs.table', function (e, text) {
+			        $result.text('Event: search.bs.table');
+			    });
+			    var toggleSwitch = false;			  
+			    function disabledChanged(toggle){
+			    	if(!toggleSwitch){
+		    			var flag = toggle.prop('checked');
+			    	 	var cid = toggle.attr("cust-id");
+			    	 	var type = 1;//禁用 task....
+			    	 	var postPojo = {}
+			    	 	postPojo.id = cid
+			    	 	postPojo.value = flag
+			    	 	postPojo.type = type
+			    		$.ajax({
+						   type: "PUT",
+						   url: "/task/inverseStatus",
+						   data: postPojo,
+						   success: function(msg){
+						   	if(msg.code === 0){
+	         		 		$("#addTask").modal("hide")
+	         		 		$('#addTaskForm')[0].reset()
+	         		 		$('#addTaskForm').data('bootstrapValidator').resetForm()
+						   	}
+						   },
+						   error:function(msg){
+						   	    //如果错误，那么取消这次变更 
+						   	    toggleSwitch = true;
+						   	    toggle.bootstrapToggle('off')
+						   		console.log("请求失败,错误信息:"+msg.responseJSON.message)
+						   		toggleSwitch = false;
+						   }
+						});
+			    	}
+			    }
+
+		 })
+	 
+	</script>
+</body>
+</html>

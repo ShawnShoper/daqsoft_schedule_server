@@ -1,0 +1,62 @@
+{"properties": [
+  {
+    "name": "provider_node.path",
+    "type": "java.lang.String",
+    "description": "A description for 'provider_node.path'"
+  },
+  {
+    "name": "application.name",
+    "type": "java.lang.String",
+    "description": "A description for 'application.name'"
+  },
+  {
+    "name": "zookeeper.host",
+    "type": "java.lang.String",
+    "description": "A description for 'zookeeper.host'"
+  },
+  {
+    "name": "zookeeper.port",
+    "type": "java.lang.Integer",
+    "description": "A description for 'zookeeper.port'"
+  },
+  {
+    "name": "zookeeper.timeout",
+    "type": "java.lang.String",
+    "description": "A description for 'zookeeper.timeout'"
+  },
+  {
+    "name": "application.heart-beat",
+    "type": "java.lang.Integer",
+    "description": "A description for 'application.heart-beat'"
+  },
+  {
+    "name": "application.timeout",
+    "type": "java.lang.Integer",
+    "description": "A description for 'application.timeout'"
+  },
+  {
+    "name": "application.generate-interval-unit",
+    "type": "java.lang.String",
+    "description": "A description for 'application.generate-interval-unit'"
+  },
+  {
+    "name": "application.task-generate-interval",
+    "type": "java.lang.String",
+    "description": "A description for 'application.task-generate-interval'"
+  },
+  {
+    "name": "application.mongo-path",
+    "type": "java.lang.String",
+    "description": "A description for 'application.mongo-path'"
+  },
+  {
+    "name": "provider.node-path",
+    "type": "java.lang.String",
+    "description": "A description for 'provider.node-path'"
+  },
+  {
+    "name": "master.node-path",
+    "type": "java.lang.String",
+    "description": "A description for 'master.node-path'"
+  }
+]}

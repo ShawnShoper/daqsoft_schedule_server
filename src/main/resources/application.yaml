@@ -1,0 +1,22 @@
+zookeeper:
+    host: 192.168.100.177
+    port: 2181
+    timeout:  20000
+hdfs: 
+    nodePath: /daq/config/hdfs
+application:
+    name: schedule_server
+    heartBeat:  30
+    timeout:  5
+    port: 8887
+    taskGenerateInterval: 1
+    generateIntervalUnit: HOURS
+    mongoPath:  /daq/config/mongo
+    redisPath:  /daq/config/redis
+    bindAddr: 192.168.0.60
+provider: 
+    nodePath: /daq/provider
+master: 
+    nodePath: /daq/master/um
+mail:
+    nodePath: /daq/config/mail
